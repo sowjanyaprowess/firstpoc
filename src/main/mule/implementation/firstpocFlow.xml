@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="45647315-0aea-4dce-9cc9-8e32ec579e0d" >
+		<http:listener-connection host="${http.host}" port="${http.port}" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="6c35e825-3003-45ec-a0f5-61aa632c10f8" >
+		<file:connection workingDir="C:\Users\91797\Desktop\MULESOFT\POC-1-Filtering File records\POC-1-Filtering File records(Rajesh)\" />
+	</file:config>
+	<flow name="firstpocFlow" doc:id="ebfffaef-cff8-4fa8-a1f7-e33f61f3e227" >
+		<logger level="INFO" doc:name="logs message during execution of the flow" doc:id="e349c973-0a99-4137-807f-f306d3a67c70" />
+		<file:read doc:name="Read the CSV file" doc:id="fb0ffe24-5c53-4d19-9547-2108fa140e1d" path='CountryOrderfile_POC1.csv' config-ref="File_Config"/>
+		<ee:transform doc:name="Component contains payload" doc:id="ae177174-1c24-4d24-9d2e-b21a99bf29cd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="filter payload data by region" doc:id="a8d08191-0539-4b1d-8a8e-f19e4dcd64f7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::core::Dates
+output application/json
+---
+payload
+    filter ($.Region == "Australia" or $.Region == "Africa")
+    groupBy ((item) -> item.Region)
+    mapObject ((regionGroup, region) -> {
+        (region): regionGroup
+            map {
+                "Country": $.Country,
+                "Order ID": $.'Order ID',
+                "Ship Date": ($.'Ship Date' as Date {format: "yyyy-MM-dd"}) as String {format: "dd-MMM-yyyy"},   
+                "Total Cost": round($.'Total Cost')
+            }
+    })
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="logs message during execution of the flow" doc:id="eeb079bf-1780-4d86-bbd4-76083eebc8ea" />
+	</flow>
+</mule>
