@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="firstpoc-test-suite.xml" />
+	<munit:test name="firstpoc-test-suite-firstpocFlowTest" doc:id="7b28ad67-f776-4359-9c91-e04b8ea14f73" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="dde948e9-1864-46d2-8ed4-836af09d8d6d" processor="flow">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ebfffaef-cff8-4fa8-a1f7-e33f61f3e227" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="8c49d87e-4293-427b-8727-957a68457103" >
+				<munit:payload value="#[payload]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to firstpocFlow" doc:id="b185f038-8fc0-47a7-a928-308fa0a879ce" name="firstpocFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="328b18fc-564b-482c-8814-82a0df8426a0" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="firstpoc-test-suite-firstpocFlow1Test" doc:id="f875f7d3-e9e8-41ee-9346-e2c0db4e7398" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a11b905b-b5ba-4811-b878-945ca366604e" processor="http:listener">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c9005a0c-09a5-4432-871f-95c203f47b3c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to firstpocFlow1" doc:id="25b8f6f8-f2dd-447d-87b9-18b7569a5f62" name="firstpocFlow1"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="87bbb3fe-85d5-4132-b067-d9f6e7d442ea" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,45 @@
+#%RAML 1.0
+title: updatedpoc
+version: 1.0
+baseUri: http://localhost:4041/api
+protocols: [ HTTP ]
+mediaType: application/json
+ 
+types:
+  Order:
+    type: object
+    properties:
+      Region: string
+      Country: string
+      OrderId: string
+      ShipDate: string
+      TotalCost: number
+ 
+  Error:
+    type: object
+    properties:
+      code: integer
+      message: string
+ 
+/resource:
+  /orders:
+    get:
+      description: Retrieve orders for specified region and file path
+      queryParameters:
+        filepath:
+          description: C:\Users\91797\Desktop\MULESOFT\POC-1-Filtering File records\POC-1-Filtering File records(Rajesh)\CountryOrderfile_POC1.csv
+          type: string
+          required: true
+        region:
+          description: Australia or Africa
+          type: string
+          required: true
+      responses:
+        200:
+          body:
+            application/json:
+              type: Order[]
+        400:
+          body:
+            application/json:
+              type: Error
